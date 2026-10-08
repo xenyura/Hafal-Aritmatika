@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hafal Aritmatika</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap">
+<style>
+/* =====================================================
+   1. TOKEN & DASAR
+   ===================================================== */
+:root {
+  box-sizing: border-box;
+  --bg1: #0a1128;
+  --bg2: #101c3d;
+  --glass: rgba(255, 255, 255, .06);
+  --border: rgba(255, 255, 255, .14);
+  --text: #e8ecf7;
+  --muted: #8e99b8;
+  --accent: #e5b85c;
+  --biru: #38b6e8;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html {
+  height: 100%;
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  height: 100%;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at 20% 0%, var(--bg2), var(--bg1) 70%) fixed;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Kaca (glassmorphism) dipakai bersama */
+.cell,
+.konten {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Tombol umum */
+.back,
+.reset,
+.lihat,
+.vtutup,
+.cell {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =====================================================
+   2. KERANGKA HALAMAN
+   ===================================================== */
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  gap: 12px;
+}
+
+@media (min-width: 700px) {
+  .app {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+.view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* =====================================================
+   3. HALAMAN UTAMA (4 GRID)
+   ===================================================== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 0;
+}
+
+header h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+header span {
+  font-size: .8rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+header span b {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  color: inherit;
+  font: inherit;
+  transition: transform .12s;
+}
+
+.cell:active {
+  transform: scale(.97);
+}
+
+.simbol {
+  font-size: clamp(3.5rem, 22vw, 7rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+}
+
+/* =====================================================
+   4. HALAMAN DALAM (BAR ATAS + KONTEN)
+   ===================================================== */
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px;
+}
+
+.bar h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.bar h2 b {
+  color: var(--accent);
+  margin-right: 6px;
+}
+
+.back {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  color: var(--text);
+  font-size: 1.3rem;
+}
+
+.konten {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+/* =====================================================
+   5. TABEL LATIHAN
+   ===================================================== */
+.ringkas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.skor {
+  font-size: .9rem;
+  color: var(--muted);
+}
+
+.skor b {
+  color: var(--accent);
+  font-size: 1.05rem;
+}
+
+.reset {
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  color: var(--text);
+  font: inherit;
+  font-size: .85rem;
+}
+
+.tabel {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 600px) {
+  .tabel {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+}
+
+.kartu {
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 8px 10px;
+}
+
+.angka {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .35);
+}
+
+/* Satu baris soal */
+.baris {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 3px 4px;
+  margin-bottom: 3px;
+  border-radius: 9px;
+  font-size: .88rem;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  transition: background .2s;
+}
+
+.baris input {
+  width: 2.5rem;
+  padding: 5px 2px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, .08);
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.baris input:focus {
+  border-color: var(--accent);
+}
+
+.baris.benar {
+  background: rgba(52, 211, 153, .28);
+}
+
+.baris.salah {
+  animation: kedip .7s ease-in-out infinite;
+}
+
+@keyframes kedip {
+  0%, 100% { background: rgba(239, 68, 68, .08); }
+  50%      { background: rgba(239, 68, 68, .42); }
+}
+
+.kanan {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.lihat {
+  width: 24px;
+  height: 26px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  color: var(--accent);
+}
+
+.lihat:active {
+  transform: scale(.92);
+}
+
+.lihat svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* =====================================================
+   6. LEMBAR VISUAL KOTAK-KOTAK
+   ===================================================== */
+.tirai {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: rgba(5, 10, 25, .72);
+}
+
+.lembar {
+  width: 100%;
+  max-width: 520px;
+  max-height: 88%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 18px 22px;
+  background: linear-gradient(180deg, #14224a, #0a1128);
+  border: 1px solid var(--border);
+  border-radius: 22px 22px 0 0;
+}
+
+.vjudul {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+}
+
+.vbody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.ket {
+  font-size: .95rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.vtutup {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  color: var(--text);
+  font: inherit;
+  font-size: .95rem;
+}
+
+/* Kotak & papan */
+.papan {
+  display: grid;
+  grid-template-columns: repeat(var(--k, 5), 20px);
+  gap: 4px;
+}
+
+.k {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: var(--accent);
+}
+
+.k.b2 {
+  background: var(--biru);
+}
+
+.k.hapus {
+  background: rgba(255, 255, 255, .1);
+  border: 1px dashed rgba(255, 255, 255, .35);
+  color: var(--muted);
+  font-style: normal;
+  font-size: 13px;
+  line-height: 17px;
+  text-align: center;
+}
+
+/* Susunan khusus per operasi */
+.grup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.op {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.klps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.klp {
+  padding: 7px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, .3);
+}
+
+.klp .papan {
+  justify-content: center;
+}
+
+.label {
+  margin-bottom: 5px;
+  font-size: .7rem;
+  color: var(--muted);
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- Halaman utama: 4 grid dibuat oleh JS dari daftar OPERASI -->
+  <div class="view" id="home">
+    <header>
+      <h1>Hafal Aritmatika</h1>
+      <span id="tgl"></span>
+    </header>
+    <main class="grid" id="menu"></main>
+  </div>
+
+  <!-- Halaman tiap operasi ditambahkan oleh JS di sini -->
+
+</div>
+
+<!-- Lembar visual kotak-kotak -->
+<div class="tirai" id="visual" hidden>
+  <div class="lembar">
+    <div class="vjudul" id="vjudul"></div>
+    <div class="vbody" id="vbody"></div>
+    <div class="ket" id="vket"></div>
+    <button type="button" class="vtutup" id="vtutup">Tutup</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* =====================================================
+   1. DATA & LOGIKA SOAL  (murni, tanpa DOM)
+   ===================================================== */
+
+const WARNA_ANGKA = [
+  '#2bb7b0', '#2f4a9c', '#e5484d', '#9a5b2f', '#38b6e8',
+  '#3bb5c0', '#ec4c8c', '#8fb52c', '#c4479a', '#f08a24'
+];
+const JUMLAH = 10; // kartu 1..10, tiap kartu 10 baris
+
+// Potongan HTML untuk visual kotak
+const kotak = (jumlah, kelas = '') =>
+  `<i class="k ${kelas}">${kelas === 'hapus' ? '×' : ''}</i>`.repeat(jumlah);
+
+const papan = (jumlah, kelas = '', kolom = 5) =>
+  `<div class="papan" style="--k:${kolom}">${kotak(jumlah, kelas)}</div>`;
+
+const kelompok = (label, jumlah, kelas) =>
+  `<div class="klp"><div class="label">${label}</div>${papan(jumlah, kelas, Math.min(jumlah, 5))}</div>`;
+
+/*
+  Tiap operasi:
+    soal(n, i)  -> kartu n, baris i  => { teks, hasil, a, b }
+    visual(s)   -> { body, ket }      untuk lembar kotak-kotak
+  Kunci simpan jawaban = 'hitung-' + simbol (tidak diubah agar data lama tetap terbaca).
+*/
+const OPERASI = [
+  {
+    id: 'tambah', nama: 'Tambah', simbol: '+',
+    soal: (n, i) => ({ teks: `${n} + ${i}`, hasil: n + i, a: n, b: i }),
+    visual: ({ a, b, hasil }) => ({
+      body: `<div class="grup">${papan(a)}<span class="op">+</span>${papan(b, 'b2')}</div>`
+          + `<div class="op">=</div>`
+          + `<div class="papan" style="--k:10">${kotak(a)}${kotak(b, 'b2')}</div>`,
+      ket: `${a} kotak ditambah ${b} kotak, semuanya jadi <b>${hasil} kotak</b>.`
+    })
+  },
+  {
+    id: 'kurang', nama: 'Kurang', simbol: '−',
+    soal: (n, i) => {
+      const a = n + i - 1;
+      return { teks: `${a} − ${n}`, hasil: a - n, a, b: n };
+    },
+    visual: ({ a, b, hasil }) => ({
+      body: `<div class="papan" style="--k:5">${kotak(hasil)}${kotak(b, 'hapus')}</div>`,
+      ket: `Ada ${a} kotak. Diambil ${b} kotak (yang pudar bertanda ×), sisanya <b>${hasil} kotak</b>.`
+    })
+  },
+  {
+    id: 'kali', nama: 'Kali', simbol: '×',
+    soal: (n, i) => ({ teks: `${i} × ${n}`, hasil: n * i, a: i, b: n }),
+    visual: ({ a, b, hasil }) => ({
+      body: `<div class="klps">${Array.from({ length: a },
+              (_, r) => kelompok(`Kelompok ${r + 1}`, b, r % 2 ? 'b2' : '')).join('')}</div>`,
+      ket: `${a} kelompok, tiap kelompok ${b} kotak.<br>${Array(a).fill(b).join(' + ')} = <b>${hasil} kotak</b>.`
+    })
+  },
+  {
+    id: 'bagi', nama: 'Bagi', simbol: '÷',
+    soal: (n, i) => ({ teks: `${n * i} : ${n}`, hasil: i, a: n * i, b: n }),
+    visual: ({ a, b, hasil }) => ({
+      body: `<div class="klps">${Array.from({ length: b },
+              (_, r) => kelompok(`Orang ${r + 1}`, hasil, r % 2 ? 'b2' : '')).join('')}</div>`,
+      ket: `${a} kotak dibagi rata untuk ${b} orang. Tiap orang dapat <b>${hasil} kotak</b>.`
+    })
+  }
+];
+
+const cariOperasi = (id) => OPERASI.find((op) => op.id === id);
+
+function htmlVisual(op, n, i) {
+  const s = op.soal(n, i);
+  return { judul: `${s.teks} = ${s.hasil}`, ...op.visual(s) };
+}
+
+/* =====================================================
+   2. PENYIMPANAN (localStorage, aman jika diblokir)
+   ===================================================== */
+
+const Simpan = {
+  baca(kunci) {
+    try { return JSON.parse(localStorage.getItem(kunci) || '{}'); }
+    catch (e) { return {}; }
+  },
+  tulis(kunci, data) {
+    try { localStorage.setItem(kunci, JSON.stringify(data)); } catch (e) { /* abaikan */ }
+  },
+  hapus(kunci) {
+    try { localStorage.removeItem(kunci); } catch (e) { /* abaikan */ }
+  }
+};
+
+/* =====================================================
+   3. TAMPILAN: MENU, HALAMAN, NAVIGASI
+   ===================================================== */
+
+const $ = (selektor, akar = document) => akar.querySelector(selektor);
+const $$ = (selektor, akar = document) => akar.querySelectorAll(selektor);
+
+const IKON_KOTAK =
+  '<svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1.2"/>'
+  + '<rect x="8" y="1" width="5" height="5" rx="1.2"/>'
+  + '<rect x="1" y="8" width="5" height="5" rx="1.2"/>'
+  + '<rect x="8" y="8" width="5" height="5" rx="1.2"/></svg>';
+
+function bangunKerangka() {
+  const menu = $('#menu');
+  const app = $('.app');
+  OPERASI.forEach((op) => {
+    menu.insertAdjacentHTML('beforeend',
+      `<button class="cell" data-page="${op.id}"><div class="simbol">${op.simbol}</div></button>`);
+    app.insertAdjacentHTML('beforeend',
+      `<div class="view" id="page-${op.id}" hidden>
+         <div class="bar">
+           <button class="back" aria-label="Kembali">&larr;</button>
+           <h2><b>${op.simbol}</b>${op.nama}</h2>
+         </div>
+         <div class="konten" id="isi-${op.id}"></div>
+       </div>`);
+  });
+}
+
+function tampil(nama) {
+  tutupVisual();
+  const id = cariOperasi(nama) ? `page-${nama}` : 'home';
+  $$('.view').forEach((v) => { v.hidden = (v.id !== id); });
+}
+
+const hashSaatIni = () => location.hash.replace('#', '');
+
+function buka(nama) {
+  try { location.hash = nama; } catch (e) { /* abaikan */ }
+  tampil(nama);
+}
+
+function kembali() {
+  if (hashSaatIni()) {
+    try { history.back(); return; } catch (e) { /* lanjut ke bawah */ }
+  }
+  tampil('home');
+}
+
+/* =====================================================
+   4. TABEL LATIHAN
+   ===================================================== */
+
+function barisHTML(op, n, i) {
+  const s = op.soal(n, i);
+  return `<div class="baris" data-k="${n}-${i}" data-h="${s.hasil}">`
+       + `<span>${s.teks} =</span>`
+       + `<div class="kanan">`
+       + `<input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off">`
+       + `<button type="button" class="lihat" aria-label="Lihat visual kotak" data-n="${n}" data-i="${i}">${IKON_KOTAK}</button>`
+       + `</div></div>`;
+}
+
+function kartuHTML(op, n) {
+  let baris = '';
+  for (let i = 1; i <= JUMLAH; i++) baris += barisHTML(op, n, i);
+  return `<div class="kartu"><div class="angka" style="background:${WARNA_ANGKA[n - 1]}">${n}</div>${baris}</div>`;
+}
+
+function renderTabel(op) {
+  const box = $(`#isi-${op.id}`);
+  const kunci = `hitung-${op.simbol}`;
+  let jawaban = Simpan.baca(kunci);
+
+  let kartu = '';
+  for (let n = 1; n <= JUMLAH; n++) kartu += kartuHTML(op, n);
+  box.innerHTML =
+    `<div class="ringkas"><div class="skor">Benar: <b class="n">0</b> / ${JUMLAH * JUMLAH}</div>`
+    + `<button class="reset">Ulangi</button></div><div class="tabel">${kartu}</div>`;
+
+  const penghitung = $('.n', box);
+  const hitungBenar = () => { penghitung.textContent = $$('.baris.benar', box).length; };
+
+  // Beri warna sesuai jawaban: kosong = netral, tepat = hijau, salah = kedip merah
+  function cek(row) {
+    const nilai = $('input', row).value.trim();
+    const benar = row.dataset.h;
+    row.classList.remove('benar', 'salah');
+    if (nilai === '') return;
+    if (nilai === benar) row.classList.add('benar');
+    else if (nilai.length >= benar.length) row.classList.add('salah');
+  }
+
+  $$('.baris', box).forEach((row) => {
+    const input = $('input', row);
+    if (jawaban[row.dataset.k]) input.value = jawaban[row.dataset.k];
+    cek(row);
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/[^0-9]/g, '');
+      cek(row);
+      hitungBenar();
+      jawaban[row.dataset.k] = input.value;
+      Simpan.tulis(kunci, jawaban);
+    });
+  });
+
+  box.addEventListener('click', (e) => {
+    const tombol = e.target.closest('.lihat');
+    if (tombol) bukaVisual(op, +tombol.dataset.n, +tombol.dataset.i);
+  });
+
+  $('.reset', box).addEventListener('click', () => {
+    jawaban = {};
+    Simpan.hapus(kunci);
+    $$('.baris', box).forEach((row) => {
+      $('input', row).value = '';
+      row.classList.remove('benar', 'salah');
+    });
+    hitungBenar();
+  });
+
+  hitungBenar();
+}
+
+/* =====================================================
+   5. LEMBAR VISUAL
+   ===================================================== */
+
+function bukaVisual(op, n, i) {
+  const v = htmlVisual(op, n, i);
+  $('#vjudul').textContent = v.judul;
+  $('#vbody').innerHTML = v.body;
+  $('#vket').innerHTML = v.ket;
+  const lembar = $('#visual');
+  lembar.hidden = false;
+  lembar.scrollTop = 0;
+}
+
+function tutupVisual() {
+  $('#visual').hidden = true;
+}
+
+/* =====================================================
+   6. MULAI
+   ===================================================== */
+
+// Tanggal + jam di header, diperbarui otomatis
+function perbaruiWaktu() {
+  const sekarang = new Date();
+  const tanggal = sekarang.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' });
+  const jam = sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  $('#tgl').innerHTML = `${tanggal} · <b>${jam}</b>`;
+}
+
+function mulai() {
+  perbaruiWaktu();
+  setInterval(perbaruiWaktu, 1000);
+
+  bangunKerangka();
+  OPERASI.forEach(renderTabel);
+
+  $$('.cell').forEach((c) => c.addEventListener('click', () => buka(c.dataset.page)));
+  $$('.back').forEach((b) => b.addEventListener('click', kembali));
+  $('#vtutup').addEventListener('click', tutupVisual);
+  $('#visual').addEventListener('click', (e) => { if (e.target === e.currentTarget) tutupVisual(); });
+  window.addEventListener('hashchange', () => tampil(hashSaatIni()));
+
+  tampil(hashSaatIni());
+}
+
+mulai();
+</script>
+</body>
+</html>
